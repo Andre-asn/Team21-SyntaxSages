@@ -1,11 +1,14 @@
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { CameraType } from 'expo-camera/build/legacy/Camera.types';
 import { useState } from 'react';
-import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import CameraButton from '../components/CameraButton';
+import GenericButton from '../components/GenericButton';
 
 export default function App() {
   const [facing, setFacing] = useState(CameraType.back)
   const [permission, requestPermission] = useCameraPermissions();
+  const [capturePic, setPicture] = useState(null)
 
   if (!permission) {
     // Camera permissions are still loading.
@@ -17,9 +20,14 @@ export default function App() {
     return (
       <View style={styles.container}>
         <Text style={styles.message}>We need your permission to show the camera</Text>
-        <Button onPress={requestPermission} title="grant permission" />
+        <GenericButton onPress={requestPermission} title="grant permission" />
       </View>
     );
+  }
+
+  async function takePic() {
+    //TODO Implement take picture function
+    // Implement save picture to database
   }
 
   function toggleCameraFacing() {
@@ -27,26 +35,39 @@ export default function App() {
   }
 
   return (
-    <View style={styles.container}>
-      <CameraView style={styles.camera} facing={facing}>
+    /*<View>
+      <CameraView>
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.flipButton} onPress={toggleCameraFacing}>
-            <Text style={styles.text}>Flip Camera</Text>
-          </TouchableOpacity>
+          <CameraButton
+          onFlip={toggleCameraFacing}
+          onCapture={takePic}
+          />
         </View>
       </CameraView>
-    </View>
+    </View>*/
+
+   <View style={styles.container}>
+      <CameraView style={styles.camera} facing={facing}>
+        <View style={styles.buttonContainer}>
+          <CameraButton
+            onFlip={toggleCameraFacing}
+            onCapture={takePic}
+          />
+        </View>
+      </CameraView>
+    </View> 
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    backgroundColor: '#F7F7FF',
   },
   message: {
     textAlign: 'center',
     paddingBottom: 10,
+    color: '#495867'
   },
   camera: {
     flex: 1,
@@ -56,15 +77,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: 'transparent',
     margin: 64,
-  },
-  flipButton: {
-    flex: 1,
-    alignSelf: 'flex-end',
-    alignItems: 'center',
-  },
-  text: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: 'white',
+    justifyContent: 'flex-end',
   },
 });
