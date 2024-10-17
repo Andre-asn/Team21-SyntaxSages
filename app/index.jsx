@@ -1,14 +1,16 @@
+import React, { useState, useRef } from 'react';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { CameraType } from 'expo-camera/build/legacy/Camera.types';
-import { useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, View, Image } from 'react-native';
 import CameraButton from '../components/CameraButton';
 import GenericButton from '../components/GenericButton';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function App() {
   const [facing, setFacing] = useState(CameraType.back)
-  const [permission, requestPermission] = useCameraPermissions();
-  const [capturePic, setPicture] = useState(null)
+  const [permission, requestPermission] = useCameraPermissions()
+  const [picture, setPicture] = useState(null)
+  const cameraRef = useRef(null)
 
   if (!permission) {
     // Camera permissions are still loading.
@@ -26,40 +28,45 @@ export default function App() {
   }
 
   async function takePic() {
-    //TODO Implement take picture function
-    // Implement save picture to database
+    const options = {quality: 1, base64: true, exif: false}
+    const newPic = await cameraRef.current.takePictureAsync(options)
+    setPicture(newPic)
   }
 
-  function toggleCameraFacing() {
+  if (picture) {
+    // TODO
+    // Log photo to a library, awaiting database integration
+    return (
+      <SafeAreaView style={styles.safe}>
+        <Image style={styles.preview} source={{uri: "data:image/jpg;base64," + picture.base64}} />
+        <GenericButton title="Take Another" onPress={() => setPicture(undefined)} />
+      </SafeAreaView>
+    )
+  }
+
+  function toggleCameraFace() {
     setFacing((current) => (current === CameraType.back ? CameraType.front : CameraType.back));
   }
 
   return (
-    /*<View>
-      <CameraView>
-        <View style={styles.buttonContainer}>
-          <CameraButton
-          onFlip={toggleCameraFacing}
-          onCapture={takePic}
-          />
-        </View>
-      </CameraView>
-    </View>*/
-
    <View style={styles.container}>
-      <CameraView style={styles.camera} facing={facing}>
-        <View style={styles.buttonContainer}>
+      <CameraView style={styles.camera} facing={facing} ref={cameraRef}>
+        <SafeAreaView style={styles.safe}>
           <CameraButton
-            onFlip={toggleCameraFacing}
+            onFlip={toggleCameraFace}
             onCapture={takePic}
           />
-        </View>
+        </SafeAreaView>
       </CameraView>
     </View> 
   );
 }
 
 const styles = StyleSheet.create({
+  safe: {
+    flex: 1,
+    justifyContent: 'flex-end',
+  }, 
   container: {
     flex: 1,
     backgroundColor: '#F7F7FF',
@@ -79,4 +86,8 @@ const styles = StyleSheet.create({
     margin: 64,
     justifyContent: 'flex-end',
   },
+  preview: {
+    flex: 1,
+    alignSelf: 'stretch',
+  }
 });

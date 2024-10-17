@@ -7,16 +7,14 @@ describe("GenericButton", () => {
         const mock = jest.fn();
         const { getByTestId } = render(<GenericButton onPress={mock} />)
         const pressMe = getByTestId("GenericButton:ClickMe")
-        fireEvent.press(pressMe)
 
+        fireEvent.press(pressMe)
         expect(mock).toHaveBeenCalled()
 
-    
     })
 
     it("renders properly", () => {
         const tree = renderer.create(<GenericButton />).toJSON()
         expect(tree).toMatchSnapshot
     })
-    
 })
