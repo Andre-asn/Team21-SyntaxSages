@@ -2,7 +2,7 @@ import React from 'react';
 import { TouchableOpacity, Text, StyleSheet } from 'react-native';
 
 const GenericButton = ({ onPress, title, style, textStyle }) => (
-    <TouchableOpacity style={[styles.button, style]} onPress={onPress}>
+    <TouchableOpacity style={[styles.button, style]} onPress={onPress} testID="GenericButton:ClickMe">
         <Text style={[styles.text, textStyle]}>{title}</Text>
     </TouchableOpacity>
 );
